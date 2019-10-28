@@ -22,13 +22,21 @@ class SudokuKeyPad extends React.Component {
       setDisable: this.setDisable,
       buildDisableTable: this.buildDisableTable,
       alphaCol: props.alphaCol,
-      currentActive: this.currentActive
+      currentActive: this.currentActive,
+      resetHighlight: this.resetHighlight,
+      addTheseRows: this.addTheseRows
     };
   }
   currentActive() {
     return this.alphaCol(this.col) + (this.row + 1).toString();
   }
-  buildDisableTable(table, row, col) {
+  addTheseRows(theResult, writeIn) {
+    for (let i = 0; i < writeIn.length; i++) {
+      theResult[writeIn[i].name] = writeIn[i].val;
+    }
+    return theResult;
+  }
+  buildDisableTable(table, row, col, writeIn) {
     let theResult = {};
     let currentAvNumber = this.possibleCandidates(table, row, col).numberArray;
     for (let j = 1; j < 10; j++) {
@@ -40,64 +48,39 @@ class SudokuKeyPad extends React.Component {
       }
       theResult["disable" + j.toString()] = disableMe;
     }
+    if (writeIn.length) {
+      return this.addTheseRows(theResult, writeIn);
+    }
     return theResult;
   }
 
   static getDerivedStateFromProps(props, state) {
-    if (
-      props.row !== state.row &&
+    return props.row !== state.row &&
       props.col !== state.col &&
       props.table !== state.table
-    ) {
-      const theResult = state.buildDisableTable(
-        props.table,
-        props.row,
-        props.col
-      );
-      theResult.row = props.row;
-      theResult.col = props.col;
-      theResult.table = props.table;
-      return theResult;
-    }
-    if (props.row !== state.row && props.col !== state.col) {
-      let theResult = state.buildDisableTable(
-        state.table,
-        props.row,
-        props.col
-      );
-      theResult.row = props.row;
-      theResult.col = props.col;
-      return theResult;
-    }
-    if (props.row !== state.row) {
-      let theResult = state.buildDisableTable(
-        state.table,
-        props.row,
-        state.col
-      );
-      theResult.row = props.row;
-      return theResult;
-    }
-    if (props.col !== state.col) {
-      let theResult = state.buildDisableTable(
-        state.table,
-        state.row,
-        props.col
-      );
-      theResult.col = props.col;
-      return theResult;
-    }
-    if (props.table !== state.table) {
-      let theResult = state.buildDisableTable(
-        props.table,
-        state.row,
-        state.col
-      );
-
-      theResult.table = props.table;
-      return theResult;
-    }
-    return null;
+      ? state.buildDisableTable(props.table, props.row, props.col, [
+          { name: "row", val: props.row },
+          { name: "col", val: props.col },
+          { name: "table", val: props.table }
+        ])
+      : props.row !== state.row && props.col !== state.col
+      ? state.buildDisableTable(state.table, props.row, props.col, [
+          { name: "row", val: props.row },
+          { name: "col", val: props.col }
+        ])
+      : props.row !== state.row
+      ? state.buildDisableTable(state.table, props.row, state.col, [
+          { name: "row", val: props.row }
+        ])
+      : props.col !== state.col
+      ? state.buildDisableTable(state.table, state.row, props.col, [
+          { name: "col", val: props.col }
+        ])
+      : props.table !== state.table
+      ? state.buildDisableTable(props.table, state.row, state.col, [
+          { name: "table", val: props.table }
+        ])
+      : null;
   }
 
   highlightActiveCell(cell) {
@@ -105,12 +88,7 @@ class SudokuKeyPad extends React.Component {
   }
   componentDidMount() {
     var modal = document.getElementById("myModal");
-
-    // Get the <span> element that closes the modal
-    //var span = document.getElementsByClassName("close")[0];
     var dialog = document.getElementById("theKeyPad");
-    //this.state.setDisable();
-    // When the user clicks the button, open the modal
     for (let i = 0; i < this.state.watchForClicks.length; i++) {
       document.getElementById(this.state.watchForClicks[i]).onclick = function(
         e
@@ -122,14 +100,9 @@ class SudokuKeyPad extends React.Component {
           e.pageY - 450 + Math.floor((window.innerHeight - 40) / 2.0); //e.pageY - 110;
         dialog.style.left = "" + newLeft + "px";
         dialog.style.top = "" + newTop + "px";
-        window.scrollTo(0, 0);
+        window.scrollTo(0, 0 + 65);
       };
     }
-    // When the user clicks on <span> (x), close the modal
-    //span.onclick = function() {
-    //  modal.style.display = "none";
-    //}
-    // When the user clicks anywhere outside of the modal, close it
     window.onresize = function() {
       var elems = document.querySelectorAll(".SudokuOptionsHighlighted");
       [].forEach.call(elems, function(el) {
@@ -147,8 +120,6 @@ class SudokuKeyPad extends React.Component {
       }
     };
   }
-  // close button
-  // <span class="close">&times;</span>
   resetHighlight() {
     var elems = document.querySelectorAll(".SudokuOptionsHighlighted");
     [].forEach.call(elems, function(el) {

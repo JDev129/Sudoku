@@ -11,6 +11,7 @@ class SudokuStart extends React.Component {
       handleSelection: this.handleSelection,
       getNumberOfStarts: this.getNumberOfStarts,
       restart: this.restart,
+      superEasyStart: 75,
       easyNumberStart: 55,
       mediumNumberStart: 45,
       hardNumberStart: 35
@@ -30,6 +31,8 @@ class SudokuStart extends React.Component {
   }
   getNumberOfStarts(difficulty) {
     switch (difficulty) {
+      case "supereasy":
+        return this.superEasyStart;
       case "easy":
         return this.easyNumberStart;
       case "medium":
@@ -52,6 +55,17 @@ class SudokuStart extends React.Component {
             Please select difficulty level
             <div style={{ paddingLeft: "10px" }}>
               <div>
+                <div>
+                  <input
+                    type="radio"
+                    name="difficulty"
+                    value="supereasy"
+                    checked={this.state.difficultyLevel === "supereasy"}
+                    onChange={this.state.handleSelection.bind(this)}
+                  />
+                  &nbsp;
+                  <label>Super easy</label>
+                </div>
                 <input
                   type="radio"
                   name="difficulty"

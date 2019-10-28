@@ -32,7 +32,9 @@ class SudokuPuzzle extends React.Component {
       solved: false,
       redirectToNewGame: false,
       restart: props.restart,
-      candidates: this.candidates
+      candidates: this.candidates,
+      alphaColumnConvert: this.alphaCol,
+      alphaCol: this.alphaCol
     };
   }
   componentDidMount() {
@@ -46,10 +48,40 @@ class SudokuPuzzle extends React.Component {
   tick() {
     this.setState({ elapsed: new Date() - this.state.start });
   }
+  alphaCol(col, isLower) {
+    switch (col) {
+      case 0:
+        return !isLower ? "A" : "a";
+      case 1:
+        return !isLower ? "B" : "b";
+      case 2:
+        return !isLower ? "C" : "c";
+      case 3:
+        return !isLower ? "D" : "d";
+      case 4:
+        return !isLower ? "E" : "e";
+      case 5:
+        return !isLower ? "F" : "f";
+      case 6:
+        return !isLower ? "G" : "g";
+      case 7:
+        return !isLower ? "H" : "h";
+      case 8:
+        return !isLower ? "I" : "i";
+      default:
+        return "";
+    }
+  }
   findDifficultyLevel(numberofstarts) {
-    if (numberofstarts < 40) return "hard";
-    if (numberofstarts >= 40 && numberofstarts < 50) return "medium";
-    if (numberofstarts >= 50 && numberofstarts < 81) return "easy";
+    return numberofstarts < 40
+      ? "hard"
+      : numberofstarts >= 40 && numberofstarts < 50
+      ? "medium"
+      : numberofstarts >= 70
+      ? "super easy "
+      : numberofstarts >= 50 && numberofstarts < 81
+      ? "easy"
+      : "";
   }
   getStarts(theTable) {
     const result = [];
@@ -57,7 +89,7 @@ class SudokuPuzzle extends React.Component {
       for (let j = 0; j < 9; j++) {
         if (theTable[i][j] != ".") {
           result.push(
-            this.getColPosition(j).toUpperCase() + (i + 1).toString()
+            this.alphaCol(j, true).toUpperCase() + (i + 1).toString()
           );
         }
       }
@@ -88,56 +120,61 @@ class SudokuPuzzle extends React.Component {
     if (!emptyBlockFound) {
       clearInterval(this.state.timerID);
     }
-    if (this.state.currentActiveMove == this.state.moveID) {
-      const currentMoveName = !emptyBlockFound
-        ? "complete"
-        : this.getColPosition(col) + (row + 1).toString();
-      this.setState({
-        moves: [
-          ...this.state.moves,
-          {
-            name: currentMoveName,
-            id: this.state.moveID + 1,
-            puzzle: this.cloneNestedArray(newPuzzle)
-          }
-        ],
-        currentPosition: this.convertToSudoku(this.cloneNestedArray(newPuzzle)),
-        currentPositionTable: this.cloneNestedArray(newPuzzle),
-        moveID: this.state.moveID + 1,
-        currentActiveMove: this.state.moveID + 1,
-        solved: !emptyBlockFound
-      });
-    } else {
-      const currentMoveName = !emptyBlockFound
-        ? "complete"
-        : this.getColPosition(col) + (row + 1).toString();
-      if (emptyBlockFound && this.state.solved) {
-        this.setState({
-          timerID: setInterval(this.tick.bind(this), 50)
+    const currentMoveName = !emptyBlockFound
+      ? "complete"
+      : this.alphaCol(col, true) + (row + 1).toString();
+    this.state.currentActiveMove == this.state.moveID
+      ? this.setState({
+          moves: [
+            ...this.state.moves,
+            {
+              name: currentMoveName,
+              id: this.state.moveID + 1,
+              puzzle: this.cloneNestedArray(newPuzzle)
+            }
+          ],
+          currentPosition: this.convertToSudoku(
+            this.cloneNestedArray(newPuzzle)
+          ),
+          currentPositionTable: this.cloneNestedArray(newPuzzle),
+          moveID: this.state.moveID + 1,
+          currentActiveMove: this.state.moveID + 1,
+          solved: !emptyBlockFound
+        })
+      : this.setState({
+          moves: this.buildArray(
+            i => i <= this.state.currentActiveMove,
+            this.state.moves,
+            {
+              name: currentMoveName,
+              id: this.state.currentActiveMove + 1,
+              puzzle: this.cloneNestedArray(newPuzzle)
+            }
+          ),
+          currentPosition: this.convertToSudoku(
+            this.cloneNestedArray(newPuzzle)
+          ),
+          currentPositionTable: this.cloneNestedArray(newPuzzle),
+          moveID: this.state.currentActiveMove + 1,
+          currentActiveMove: this.state.currentActiveMove + 1,
+          solved: !emptyBlockFound,
+          timerID:
+            emptyBlockFound && this.state.solved
+              ? setInterval(this.tick.bind(this), 50)
+              : this.state.timerID
         });
-      }
-      let theMoves = [];
-      for (let i = 0; i < this.state.moves.length; i++) {
-        if (i <= this.state.currentActiveMove) {
-          theMoves.push(this.state.moves[i]);
-        }
-      }
-      theMoves.push({
-        name: currentMoveName,
-        id: this.state.currentActiveMove + 1,
-        puzzle: this.cloneNestedArray(newPuzzle)
-      });
-      this.setState({
-        moves: theMoves,
-        currentPosition: this.convertToSudoku(this.cloneNestedArray(newPuzzle)),
-        currentPositionTable: this.cloneNestedArray(newPuzzle),
-        moveID: this.state.currentActiveMove + 1,
-        currentActiveMove: this.state.currentActiveMove + 1,
-        solved: !emptyBlockFound
-      });
-    }
   }
 
+  buildArray(condition, theArray, additionalPush) {
+    let theResult = [];
+    for (let i = 0; i < theArray.length; i++) {
+      if (condition(i)) {
+        theResult.push(theArray[i]);
+      }
+    }
+    theResult.push(additionalPush);
+    return theResult;
+  }
   getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
   }
@@ -205,37 +242,12 @@ class SudokuPuzzle extends React.Component {
     return solved;
   }
 
-  getColPosition(col) {
-    switch (col) {
-      case 0:
-        return "a";
-      case 1:
-        return "b";
-      case 2:
-        return "c";
-      case 3:
-        return "d";
-      case 4:
-        return "e";
-      case 5:
-        return "f";
-      case 6:
-        return "g";
-      case 7:
-        return "h";
-      case 8:
-        return "i";
-      default:
-        return "";
-    }
-  }
-
   convertToSudoku(table) {
     let result = {};
     for (let i = 1; i <= 9; i++) {
       for (let j = 1; j <= 9; j++) {
         if (table[i - 1][j - 1] === ".") continue;
-        result[this.getColPosition(j - 1) + i.toString()] = table[i - 1][j - 1];
+        result[this.alphaCol(j - 1, true) + i.toString()] = table[i - 1][j - 1];
       }
     }
     return result;
@@ -362,6 +374,7 @@ class SudokuPuzzle extends React.Component {
           possibleCandidates={this.state.candidates.bind(this)}
           cellChange={this.state.cellChange.bind(this)}
           starts={this.state.starts}
+          alphaColumnConvert={this.state.alphaColumnConvert}
         />
         <br></br>
         <label>Goto Move</label>
