@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import SudokuKeyPad from "./SudokuKeyPad";
 //import SudokuCell from "./SudokuCell";
-const Sudoku = ({ positions, table, possibleCandidates, cellChange, starts }) => {
+const Sudoku = ({ positions, table, possibleCandidates, cellChange, starts, alphaColumnConvert }) => {
   const [currentActiveRow, setCurrentActiveRow] = useState(0);
   const [currentActiveCol, setCurrentActiveCol] = useState(0);
   const [currentChild, setCurrentChild] = useState(1);
-  const [alphaCol] = useState(AlphaCol);
+  const [alphaCol] = useState(alphaColumnConvert);
   const watchForClicks = () =>{
     const arrayOfClickElements = [];
     for(let i = 0; i < 9; i ++){
       for(let j = 0; j < 9; j++){
         if(table[i][j] == '.'){
-          arrayOfClickElements.push(AlphaCol(j) + (i + 1).toString());
+          arrayOfClickElements.push(alphaColumnConvert(j) + (i + 1).toString());
         }
       }
     }
@@ -25,28 +25,7 @@ const Sudoku = ({ positions, table, possibleCandidates, cellChange, starts }) =>
       }
     }
   });
-  const AlphaCol = (col) =>{
-    switch(col){
-      case 0 :
-        return "A";
-      case 1:
-        return "B";
-      case 2:
-        return "C";
-      case 3:
-        return "D";
-      case 4:
-        return "E";
-      case 5 :
-        return "F";
-      case 6:
-        return "G";
-      case 7 :
-        return "H";
-      case 8:
-        return "I"; 
-    }
-  }
+ 
   const handleCellChange = (row, col) => {
     setCurrentActiveCol(col);
     setCurrentActiveRow(row);
@@ -626,6 +605,7 @@ Sudoku.propTypes = {
   possibleCandidates: PropTypes.func.isRequired,
   table: PropTypes.array.isRequired,
   cellChange: PropTypes.func.isRequired,
-  starts: PropTypes.array
+  starts: PropTypes.array,
+  alphaColumnConvert: PropTypes.func.isRequired
 };
 export default Sudoku;
