@@ -4,7 +4,13 @@ import PropTypes from "prop-types";
 class SudokuPuzzle extends React.Component {
   constructor(props) {
     super(props);
-    const myNewPuzzle = this.findAValidSudoku(props.numberOfStarts);
+    let myNewPuzzle = this.findAValidSudoku(props.numberOfStarts);
+    if (myNewPuzzle == undefined) {
+      props.noSolutionFound();
+      myNewPuzzle = {};
+      myNewPuzzle.start = this.emptyTable();
+    }
+    myNewPuzzle.solution = this.emptyTable();
     const solutionTable = this.convertToSudoku(myNewPuzzle.solution);
     const currentPos = this.convertToSudoku(myNewPuzzle.start);
     this.state = {
@@ -34,8 +40,20 @@ class SudokuPuzzle extends React.Component {
       restart: props.restart,
       candidates: this.candidates,
       alphaColumnConvert: this.alphaCol,
-      alphaCol: this.alphaCol
+      alphaCol: this.alphaCol,
+      inValidSolution: false,
+      allowAnyEntry: props.allowAnyEntry
     };
+  }
+  setInValidSolution() {
+    this.setState({
+      inValidSolution: true
+    });
+  }
+  setValidSolution() {
+    this.setState({
+      inValidSolution: false
+    });
   }
   componentDidMount() {
     this.setState({
@@ -100,16 +118,22 @@ class SudokuPuzzle extends React.Component {
   cellChange(newNumber, row, col) {
     const newPuzzle = this.state.currentPositionTable;
     let emptyBlockFound = false;
+    let validPuzzle = true;
     for (let prow = 0; prow < 9; prow++) {
       for (let pcol = 0; pcol < 9; pcol++) {
-        //todo check its valid
-        // const candidiates = this.getCandidates(
-        //   this.state.currentPositionTable,
-        //   prow,
-        //   pcol
-        // );
-        // const currentCandidate = newNumber;
         if (prow == row && pcol == col) {
+          let theCandidates = this.candidates(
+            this.state.currentPositionTable,
+            row,
+            col
+          ).numberArray;
+          let isValidOption = false;
+          for (let i = 0; i < theCandidates.length; i++) {
+            if (theCandidates[i] == newNumber) {
+              isValidOption = true;
+            }
+          }
+          validPuzzle = isValidOption;
           newPuzzle[prow][pcol] = newNumber;
         }
         if (newPuzzle[prow][pcol] == ".") {
@@ -118,6 +142,9 @@ class SudokuPuzzle extends React.Component {
       }
     }
     if (!emptyBlockFound) {
+      if (!validPuzzle) {
+        this.setInValidSolution();
+      }
       clearInterval(this.state.timerID);
     }
     const currentMoveName = !emptyBlockFound
@@ -161,7 +188,8 @@ class SudokuPuzzle extends React.Component {
           timerID:
             emptyBlockFound && this.state.solved
               ? setInterval(this.tick.bind(this), 50)
-              : this.state.timerID
+              : this.state.timerID,
+          inValidSolution: !emptyBlockFound && !validPuzzle
         });
   }
 
@@ -204,7 +232,47 @@ class SudokuPuzzle extends React.Component {
     }
     return result;
   }
-
+  solveAnotherWayPuzzle(table, stepsCount, firstSolution) {
+    let solved = false;
+    let row = -1;
+    let col = -1;
+    let candidates = null;
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        if (table[i][j] == ".") {
+          //let newCandidates = this.candidates(table, i, j).stringArray;
+          let newCandidates = this.candidates(table, i, j).numberArray;
+          let validNewCands = [];
+          for (var k = 0; k < newCandidates.length; k++)
+            if (newCandidates[k].toString() != firstSolution[i][j])
+              validNewCands.push(newCandidates[k]);
+          if (row < 0 || validNewCands.length < candidates.length) {
+            row = i;
+            col = j;
+            //candidates = newCandidates;
+            candidates = validNewCands.toString();
+          }
+        }
+      }
+    }
+    if (row < 0) {
+      solved = true;
+    } else {
+      for (let i = 0; i < candidates.length; i++) {
+        table[row][col] = candidates[i];
+        if (stepsCount >= 10000000) {
+          return false;
+        }
+        stepsCount++;
+        if (this.solveAnotherWayPuzzle(table, stepsCount, firstSolution)) {
+          solved = true;
+          break;
+        }
+        table[row][col] = ".";
+      }
+    }
+    return solved;
+  }
   solvePuzzle(table, stepsCount) {
     let solved = false;
     let row = -1;
@@ -276,12 +344,23 @@ class SudokuPuzzle extends React.Component {
     let result = {};
     while (tries > 0) {
       let table = this.randomSudoku(this.emptyTable(), 24);
-      //result.start = this.cloneNestedArray(table);
       let stepsCount = 0;
       if (this.solvePuzzle(table, stepsCount)) {
         result.start = this.cloneNestedArray(
           this.getRandomStart(this.cloneNestedArray(table), numberofstarts)
         );
+        if (
+          this.solveAnotherWayPuzzle(
+            this.cloneNestedArray(result.start),
+            stepsCount,
+            this.cloneNestedArray(table)
+          )
+        ) {
+          if (tries > 0) {
+            tries--;
+            continue;
+          }
+        }
         result.solution = table;
         return result;
       } else {
@@ -359,15 +438,32 @@ class SudokuPuzzle extends React.Component {
 
         <br />
         <label>Diffiulty Level: {this.state.difficultyLevel}</label>
-        {this.state.solved ? (
-          <div>
-            Congratulations!! You solved the puzzle in{" "}
-            {minutes > 0 ? <>{minutes} minutes and</> : <></>}
-            {remainingSeconds} seconds
-          </div>
+
+        {this.state.inValidSolution ? (
+          <>
+            <br />
+            <div className="jumbotron">
+              Sorry but this is NOT a valid sudoku solution!{" "}
+              <p>
+                Please back up to a previous step and retry to find the correct
+                solution
+              </p>
+            </div>
+          </>
         ) : (
-          <></>
+          <>
+            {this.state.solved ? (
+              <div className="jumbotron">
+                Congratulations!! You solved the puzzle in{" "}
+                {minutes > 0 ? <>{minutes} minutes and</> : <></>}
+                {remainingSeconds} seconds
+              </div>
+            ) : (
+              <></>
+            )}
+          </>
         )}
+
         <Sudoku
           positions={this.state.currentPosition}
           table={this.state.currentPositionTable}
@@ -375,9 +471,10 @@ class SudokuPuzzle extends React.Component {
           cellChange={this.state.cellChange.bind(this)}
           starts={this.state.starts}
           alphaColumnConvert={this.state.alphaColumnConvert}
+          allowAnyEntry={this.state.allowAnyEntry}
         />
         <br></br>
-        <label>Goto Move</label>
+        <label>Go to Move</label>
         <div>
           {this.state.moves.map(move => (
             <>
@@ -385,6 +482,7 @@ class SudokuPuzzle extends React.Component {
               <a
                 style={{
                   paddingLeft: "5px",
+                  paddingBottom: "20px",
                   fontWeight:
                     move.id == this.state.currentActiveMove ? "bold" : ""
                 }}
@@ -411,7 +509,9 @@ class SudokuPuzzle extends React.Component {
 
 SudokuPuzzle.propTypes = {
   numberOfStarts: PropTypes.number.isRequired,
-  restart: PropTypes.func.isRequired
+  restart: PropTypes.func.isRequired,
+  noSolutionFound: PropTypes.func.isRequired,
+  allowAnyEntry: PropTypes.bool.isRequired
 };
 
 export default SudokuPuzzle;
