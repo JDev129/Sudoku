@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import SudokuKeyPad from "./SudokuKeyPad";
 //import SudokuCell from "./SudokuCell";
-const Sudoku = ({ positions, table, possibleCandidates, cellChange, starts, alphaColumnConvert }) => {
+const Sudoku = ({ positions, table, possibleCandidates, cellChange, starts, alphaColumnConvert, allowAnyEntry }) => {
   const [currentActiveRow, setCurrentActiveRow] = useState(0);
   const [currentActiveCol, setCurrentActiveCol] = useState(0);
   const [currentChild, setCurrentChild] = useState(1);
@@ -41,7 +41,8 @@ const Sudoku = ({ positions, table, possibleCandidates, cellChange, starts, alph
         table={table}
         setNumber={cellChange}
         watchForClicks={watchForClicks()}
-        alphaCol={alphaCol} />
+        alphaCol={alphaCol}
+        allowAnyEntry={allowAnyEntry} />
       
                       
       <div style={{ position: "relative", left: "30px" }}>
@@ -606,6 +607,7 @@ Sudoku.propTypes = {
   table: PropTypes.array.isRequired,
   cellChange: PropTypes.func.isRequired,
   starts: PropTypes.array,
-  alphaColumnConvert: PropTypes.func.isRequired
+  alphaColumnConvert: PropTypes.func.isRequired,
+  allowAnyEntry: PropTypes.bool.isRequired
 };
 export default Sudoku;
