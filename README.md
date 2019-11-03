@@ -2,7 +2,7 @@
 
 React Sudoku Puzzle Version 1.1
 
-Added configuration settings. Now you can change how many cell values you start with for a specific difficulty. Can only set a value between 0 and 81. You will notice that as you can closer to 0 (somewhere around 20) it becomes impossible to find a valid solution.
+Added configuration settings. Now you can change how many cell values you start with for a specific difficulty. Can only set a value between 0 and 81. You will notice that as you can closer to 0 (somewhere around 20) it becomes impossible to find a valid solution. Still need to add a validation message if you try to imput invalid number (alpha character or number less than 0 or greater than 80).
 
 Major positioning issue on SudokuKeyPad 
 
