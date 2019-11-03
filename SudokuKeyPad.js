@@ -24,7 +24,8 @@ class SudokuKeyPad extends React.Component {
       alphaCol: props.alphaCol,
       currentActive: this.currentActive,
       resetHighlight: this.resetHighlight,
-      addTheseRows: this.addTheseRows
+      addTheseRows: this.addTheseRows,
+      allowAnyEntry: this.allowAnyEntry
     };
   }
   currentActive() {
@@ -36,17 +37,24 @@ class SudokuKeyPad extends React.Component {
     }
     return theResult;
   }
-  buildDisableTable(table, row, col, writeIn) {
+  buildDisableTable(table, row, col, writeIn, allowAnyEntry) {
     let theResult = {};
-    let currentAvNumber = this.possibleCandidates(table, row, col).numberArray;
-    for (let j = 1; j < 10; j++) {
-      let disableMe = true;
-      for (let i = 0; i < currentAvNumber.length; i++) {
-        if (j == currentAvNumber[i]) {
-          disableMe = false;
-        }
+    if (allowAnyEntry) {
+      for (let j = 1; j < 10; j++) {
+        theResult["disable" + j.toString()] = false;
       }
-      theResult["disable" + j.toString()] = disableMe;
+    } else {
+      let currentAvNumber = this.possibleCandidates(table, row, col)
+        .numberArray;
+      for (let j = 1; j < 10; j++) {
+        let disableMe = true;
+        for (let i = 0; i < currentAvNumber.length; i++) {
+          if (j == currentAvNumber[i]) {
+            disableMe = false;
+          }
+        }
+        theResult["disable" + j.toString()] = disableMe;
+      }
     }
     if (writeIn.length) {
       return this.addTheseRows(theResult, writeIn);
@@ -58,28 +66,49 @@ class SudokuKeyPad extends React.Component {
     return props.row !== state.row &&
       props.col !== state.col &&
       props.table !== state.table
-      ? state.buildDisableTable(props.table, props.row, props.col, [
-          { name: "row", val: props.row },
-          { name: "col", val: props.col },
-          { name: "table", val: props.table }
-        ])
+      ? state.buildDisableTable(
+          props.table,
+          props.row,
+          props.col,
+          [
+            { name: "row", val: props.row },
+            { name: "col", val: props.col },
+            { name: "table", val: props.table }
+          ],
+          props.allowAnyEntry
+        )
       : props.row !== state.row && props.col !== state.col
-      ? state.buildDisableTable(state.table, props.row, props.col, [
-          { name: "row", val: props.row },
-          { name: "col", val: props.col }
-        ])
+      ? state.buildDisableTable(
+          state.table,
+          props.row,
+          props.col,
+          [{ name: "row", val: props.row }, { name: "col", val: props.col }],
+          props.allowAnyEntry
+        )
       : props.row !== state.row
-      ? state.buildDisableTable(state.table, props.row, state.col, [
-          { name: "row", val: props.row }
-        ])
+      ? state.buildDisableTable(
+          state.table,
+          props.row,
+          state.col,
+          [{ name: "row", val: props.row }],
+          props.allowAnyEntry
+        )
       : props.col !== state.col
-      ? state.buildDisableTable(state.table, state.row, props.col, [
-          { name: "col", val: props.col }
-        ])
+      ? state.buildDisableTable(
+          state.table,
+          state.row,
+          props.col,
+          [{ name: "col", val: props.col }],
+          props.allowAnyEntry
+        )
       : props.table !== state.table
-      ? state.buildDisableTable(props.table, state.row, state.col, [
-          { name: "table", val: props.table }
-        ])
+      ? state.buildDisableTable(
+          props.table,
+          state.row,
+          state.col,
+          [{ name: "table", val: props.table }],
+          props.allowAnyEntry
+        )
       : null;
   }
 
@@ -100,7 +129,7 @@ class SudokuKeyPad extends React.Component {
           e.pageY - 450 + Math.floor((window.innerHeight - 40) / 2.0); //e.pageY - 110;
         dialog.style.left = "" + newLeft + "px";
         dialog.style.top = "" + newTop + "px";
-        window.scrollTo(0, 0 + 65);
+        window.scrollTo(0, 65);
       };
     }
     window.onresize = function() {
@@ -254,6 +283,7 @@ SudokuKeyPad.propTypes = {
   possibleCandidates: PropTypes.func.isRequired,
   setDisable: PropTypes.func.isRequired,
   alphaCol: PropTypes.func.isRequired,
-  currentActive: PropTypes.func.isRequired
+  currentActive: PropTypes.func.isRequired,
+  allowAnyEntry: PropTypes.bool.isRequired
 };
 export default SudokuKeyPad;
