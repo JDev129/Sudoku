@@ -121,7 +121,7 @@ class SudokuConfiguration extends React.Component {
             onClick={() => {
               this.state.setEasyNumberStart(this.state.easyNumberStart);
               this.state.setMediumNumberStart(this.state.mediumNumberStart);
-              this.state.setHardNumberStart(this.state.setHardNumberStart);
+              this.state.setHardNumberStart(this.state.hardNumberStart);
               this.state.setSuperEasyStart(this.state.superEasyStart);
               this.state.setShowOnlyValidEntitries(
                 this.state.showOnlyValidEntitries
