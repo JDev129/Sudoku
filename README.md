@@ -34,8 +34,7 @@ Made positioning updates to SudokuKeyPad. Needs further testing.
 V 1.1
 Added configuration settings. Now you can change how many cell values you start with for a specific difficulty. Can only set a value between 0 and 81. You will notice that as you can closer to 0 (somewhere around 20) it becomes impossible to find a valid solution. Still need to add a validation message if you try to input an invalid number (alpha character or number less than 0 or greater than 80).
 
-Fixed bug in version 1.0 with multiple solution produced. See the addition to the solvePuzzle function. If the third parameter, 'solutionToCheckCantBeSolvedTwoWays', is provided it eliminates its values from being possible candidates for the first paramenters 'attemptedSudokuPuzzle' puzzle. This allows you to attempt to find a second solution of a puzzle which is different from the first solution.
-
+Fixed bug in version 1.0 with multiple solution produced. See the addition to the solvePuzzle function. If the third parameter, 'solutionToCheckCantBeSolvedTwoWays', is provided it eliminates its values from being possible candidates for the first paramenters 'attemptedSudokuPuzzle' puzzle. This allows you to attempt to find a second solution of a puzzle which is different from the first solution provided.
 
 
 V 1.0
