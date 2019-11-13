@@ -4,6 +4,14 @@ class SudokuConfiguration extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      startingValues: {
+        superEasyStart: props.superEasyStart,
+        easyNumberStart: props.easyNumberStart,
+        mediumNumberStart: props.mediumNumberStart,
+        hardNumberStart: props.hardNumberStart,
+        showOnlyValidEntitries: props.showOnlyValidEntitries,
+        allowOnlyValidEntries: props.allowOnlyValidEntries
+      },
       superEasyStart: props.superEasyStart,
       easyNumberStart: props.easyNumberStart,
       mediumNumberStart: props.mediumNumberStart,
@@ -82,58 +90,81 @@ class SudokuConfiguration extends React.Component {
           &nbsp;&nbsp;
           <label>Hard</label>
           <div>
-            <input
-              checked={this.state.showOnlyValidEntitries}
-              onChange={e => {
-                this.setState({
-                  showOnlyValidEntitries: e.target.checked
-                });
-              }}
-              type="checkbox"
-            />
-            &nbsp;&nbsp;
-            <label>
-              Provide only valid candidates when player attempts to edit a cell
-            </label>
+            <div className="row">
+              <div className="col-xs-1">
+                &nbsp;&nbsp;
+                <input
+                  checked={this.state.showOnlyValidEntitries}
+                  onChange={e => {
+                    this.setState({
+                      showOnlyValidEntitries: e.target.checked
+                    });
+                  }}
+                  type="checkbox"
+                />
+              </div>
+              <div className="col">
+                <label>
+                  Provide only valid candidates when player attempts to edit a
+                  cell
+                </label>
+              </div>
+              <div className="col">
+                <em style={{ fontSize: "11px" }}>
+                  *this allow users to input invalid entries. Only when the
+                  player finishes the games does the system reveal if the player
+                  has solved the puzzle correctly.
+                </em>
+              </div>
+            </div>
+            <div>
+              <button
+                className="btn btn-sm btn-warning"
+                onClick={() => {
+                  this.state.setEasyNumberStart(
+                    this.state.startingValues.easyNumberStart
+                  );
+                  this.state.setMediumNumberStart(
+                    this.state.startingValues.mediumNumberStart
+                  );
+                  this.state.setHardNumberStart(
+                    this.state.startingValues.hardNumberStart
+                  );
+                  this.state.setSuperEasyStart(
+                    this.state.startingValues.superEasyStart
+                  );
+                  this.state.setShowOnlyValidEntitries(
+                    this.state.startingValues.showOnlyValidEntitries
+                  );
+                  this.state.setAllowOnlyValidEntries(
+                    this.state.startingValues.allowOnlyValidEntries
+                  );
+                  this.state.configurationSet();
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                style={{ float: "right" }}
+                className="btn btn-sm btn-primary"
+                onClick={() => {
+                  this.state.setEasyNumberStart(this.state.easyNumberStart);
+                  this.state.setMediumNumberStart(this.state.mediumNumberStart);
+                  this.state.setHardNumberStart(this.state.hardNumberStart);
+                  this.state.setSuperEasyStart(this.state.superEasyStart);
+                  this.state.setShowOnlyValidEntitries(
+                    this.state.showOnlyValidEntitries
+                  );
+                  this.state.setAllowOnlyValidEntries(
+                    this.state.allowOnlyValidEntries
+                  );
+                  this.state.configurationSet();
+                }}
+              >
+                Save
+              </button>
+            </div>
           </div>
-          <div>
-            <input
-              checked={this.state.allowOnlyValidEntries}
-              onChange={e => {
-                this.setState({
-                  allowOnlyValidEntries: e.target.checked
-                });
-              }}
-              type="checkbox"
-            />
-            &nbsp;&nbsp;
-            <label>Allow for invalid puzzles*</label>
-            <br />
-            <em>
-              *this allow users to input invalid entries. Only when the player
-              finishes the games does the system reveal if the player has solved
-              the puzzle correctly.
-            </em>
-          </div>
-          <button
-            style={{ float: "right" }}
-            className="btn btn-sm btn-primary"
-            onClick={() => {
-              this.state.setEasyNumberStart(this.state.easyNumberStart);
-              this.state.setMediumNumberStart(this.state.mediumNumberStart);
-              this.state.setHardNumberStart(this.state.hardNumberStart);
-              this.state.setSuperEasyStart(this.state.superEasyStart);
-              this.state.setShowOnlyValidEntitries(
-                this.state.showOnlyValidEntitries
-              );
-              this.state.setAllowOnlyValidEntries(
-                this.state.allowOnlyValidEntries
-              );
-              this.state.configurationSet();
-            }}
-          >
-            Commit
-          </button>
         </div>
       </>
     );
