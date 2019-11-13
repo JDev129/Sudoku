@@ -1,5 +1,5 @@
 # Sudoku
-React Sudoku Puzzle
+React Sudoku Puzzle V1.3
 
 Welcome, to my sudoku puzzle. 
 
@@ -19,31 +19,27 @@ JChristman129@gmail.com
 
 
 
-
-Most recent version V1.3
-
-Cleaned up solution function inside Sudoku component. Fixed a found bug. It would allow you to continue playing even after all the cells were entered (regardless if it was a valid solution or not.) You will notice when you complete a puzzle. You cannot clear or change any of the values without first moving back to a previous move at the bottom.
-
-
 Release Notes:
-React Sudoku Puzzle V1.3
+V1.3
 
-Updated 
+Cleaned up solution function inside Sudoku component. Fixed a found bug. It would allow you to continue playing even after all the cells were entered (regardless if it was a valid solution or not.) You will notice when you complete a puzzle that you cannot clear or change any of the values with the SudokuKeyPad without first moving back to a previous move at the bottom.
 
 
-React Sudoku Puzzle V 1.2
+
+V 1.2
 
 Made positioning updates to SudokuKeyPad. Needs further testing.
 
 
-:::: React Sudoku Puzzle Version 1.1
+V 1.1
 Added configuration settings. Now you can change how many cell values you start with for a specific difficulty. Can only set a value between 0 and 81. You will notice that as you can closer to 0 (somewhere around 20) it becomes impossible to find a valid solution. Still need to add a validation message if you try to input an invalid number (alpha character or number less than 0 or greater than 80).
 
 Fixed bug in version 1.0 with multiple solution produced.
 
 
 
-:::: React Sudoku Puzzle Version 1.0
+V 1.0
+
 Positioning issue on SudokuKeyPad 
 
 line 103 of SudokuKeyPad is setting scroll position.. this only works for large screens. 
