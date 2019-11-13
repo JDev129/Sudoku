@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import SudokuKeyPad from "./SudokuKeyPad";
-//import SudokuCell from "./SudokuCell";
-const Sudoku = ({ positions, table, possibleCandidates, cellChange, starts, alphaColumnConvert, allowAnyEntry }) => {
+const Sudoku = ({ positions, table, possibleCandidates, cellChange, starts, alphaColumnConvert, allowAnyEntry, currentActiveMoveName }) => {
   const [currentActiveRow, setCurrentActiveRow] = useState(0);
   const [currentActiveCol, setCurrentActiveCol] = useState(0);
   const [currentChild, setCurrentChild] = useState(1);
   const [alphaCol] = useState(alphaColumnConvert);
-  const watchForClicks = () =>{
+  const watchForClicks = () => {
     const arrayOfClickElements = [];
     for(let i = 0; i < 9; i ++){
       for(let j = 0; j < 9; j++){
@@ -34,18 +33,7 @@ const Sudoku = ({ positions, table, possibleCandidates, cellChange, starts, alph
   return (
     <>
       <br />
-      <SudokuKeyPad 
-        possibleCandidates={possibleCandidates}
-        row={currentActiveRow}
-        col={currentActiveCol}
-        table={table}
-        setNumber={cellChange}
-        watchForClicks={watchForClicks()}
-        alphaCol={alphaCol}
-        allowAnyEntry={allowAnyEntry} />
-      
-                      
-      <div style={{ position: "relative", left: "30px" }}>
+      <div  id="mySudokuPuzzle" style={{left:"35px", position: "relative"}}>
         <table>
           <tr>
             <td className="blockgroup">
@@ -54,8 +42,6 @@ const Sudoku = ({ positions, table, possibleCandidates, cellChange, starts, alph
                   <td className="cell">
                     <div className="square" id="A1" onClick={() => handleCellChange(0, 0)}>
                     {positions.a1}
-                      {/* {positions.a1 == undefined || positions.a1.length == 0 ?
-                       <SudokuCell /> : positions.a1} */}
                     </div>
                   </td>
                   <td className="cell">
@@ -598,6 +584,17 @@ const Sudoku = ({ positions, table, possibleCandidates, cellChange, starts, alph
         <br></br>
         {possibleCandidates(table, 0, 2).map(cand => cand)} */}
       </div>
+      <SudokuKeyPad 
+        possibleCandidates={possibleCandidates}
+        row={currentActiveRow}
+        col={currentActiveCol}
+        table={table}
+        setNumber={cellChange}
+        watchForClicks={watchForClicks()}
+        alphaCol={alphaCol}
+        allowAnyEntry={allowAnyEntry}
+        sudokuTableName="mySudokuPuzzle"
+        currentActiveMoveName={currentActiveMoveName} />
     </>
   );
 };
@@ -608,6 +605,7 @@ Sudoku.propTypes = {
   cellChange: PropTypes.func.isRequired,
   starts: PropTypes.array,
   alphaColumnConvert: PropTypes.func.isRequired,
-  allowAnyEntry: PropTypes.bool.isRequired
+  allowAnyEntry: PropTypes.bool.isRequired,
+  currentActiveMoveName: PropTypes.string.isRequired
 };
 export default Sudoku;
