@@ -1,6 +1,22 @@
 # Sudoku
+React Sudoku Puzzle
 
-React Sudoku Puzzle Version 1.2
+Welcome, to my sudoku puzzle. 
+
+The following project was inspired from an excersize created by the great coder name Zoran Horvat. 
+(found here)
+http://codinghelmet.com/exercises/sudoku-solver
+
+Although this code is C#, it was relativaley 
+
+Most recent version V1.3
+
+Release Notes:
+React Sudoku Puzzle V1.3
+
+
+
+React Sudoku Puzzle V 1.2
 
 Made positioning updates to SudokuKeyPad. Needs further testing.
 
