@@ -7,7 +7,7 @@ The following project was inspired from an excersize created by the great coder 
 (found here)
 http://codinghelmet.com/exercises/sudoku-solver
 
-After completing the follow up exercises, found in the C# file SudokuCSharpProgram.cs, I moved the heart of the logic to javascript and created a react user interface. Everything begins at the react component 'SudokuStart' in SudokuStart.js. This component handles the configuration and difficulty selection. From there it runs the SudokuPuzzle component which handles creating the solution and the starting puzzle. It also manages the progress of the puzzle and anding new attempted values and then the puzzle is displayed in the Sudoku component.
+After completing the follow up exercises, found in the C# file SudokuCSharpProgram.cs, I moved the heart of the logic to javascript and created a react user interface. Everything begins at the react component 'SudokuStart' in SudokuStart.js. This component handles the configuration and difficulty selection. From there it runs the SudokuPuzzle component which handles creating the solution and the starting puzzle. This component also manages the progress of the puzzle and anding new attempted values and then the puzzle is displayed in the Sudoku component.
 The last 2 components, SudokuConfiguration and SudokuKeyPad, are subcontracting out the tasks associated with their name. Please take a look and let me know if you have any questions suggestions or input.
 
 Thanks,
