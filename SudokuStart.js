@@ -1,6 +1,6 @@
 import React from "react";
 import SudokuPuzzle from "./SudokuPuzzle";
-import SudokuConfiguration from "./SudokuConfiguration";
+import StateSelector from "./ReactStateSelector";
 class SudokuStart extends React.Component {
   constructor(props) {
     super(props);
@@ -21,48 +21,16 @@ class SudokuStart extends React.Component {
       showConfiguration: false,
       showOnlyValidEntitries: true,
       allowOnlyValidEntries: true,
-      setSuperEasyStart: this.setSuperEasyStart,
-      setEasyNumberStart: this.setEasyNumberStart,
-      setMediumNumberStart: this.setMediumNumberStart,
-      setHardNumberStart: this.setHardNumberStart,
-      setShowOnlyValidEntitries: this.setShowOnlyValidEntitries,
-      setAllowOnlyValidEntries: this.setAllowOnlyValidEntries,
       configurationSet: this.configurationSet,
-      setSudokuStart: this.setSudokuStart
+      setSudokuStart: this.setSudokuStart,
+      host: this.host,
+      stateSelectorSetup: this.stateSelectorSetup
     };
   }
+
   configurationSet() {
     this.setState({
       showConfiguration: false
-    });
-  }
-  setSudokuStart(newVal, valName, ctx) {
-    if (newVal > 0 && newVal <= 81) {
-      ctx.setState({
-        [valName]: newVal
-      });
-    }
-  }
-  setSuperEasyStart(newVal) {
-    this.state.setSudokuStart(newVal, "superEasyStart", this);
-  }
-  setEasyNumberStart(newVal) {
-    this.state.setSudokuStart(newVal, "easyNumberStart", this);
-  }
-  setMediumNumberStart(newVal) {
-    this.state.setSudokuStart(newVal, "mediumNumberStart", this);
-  }
-  setHardNumberStart(newVal) {
-    this.state.setSudokuStart(newVal, "hardNumberStart", this);
-  }
-  setShowOnlyValidEntitries(newVal) {
-    this.setState({
-      showOnlyValidEntitries: newVal
-    });
-  }
-  setAllowOnlyValidEntries(newVal) {
-    this.setState({
-      allowOnlyValidEntries: newVal
     });
   }
   handleSelection(e) {
@@ -94,29 +62,61 @@ class SudokuStart extends React.Component {
         return this.hardNumberStart;
     }
   }
+  host() {
+    return this;
+  }
+
   render() {
     return (
       <>
         {this.state.showConfiguration ? (
           <>
-            <SudokuConfiguration
-              superEasyStart={this.state.superEasyStart}
-              easyNumberStart={this.state.easyNumberStart}
-              mediumNumberStart={this.state.mediumNumberStart}
-              hardNumberStart={this.state.hardNumberStart}
-              setSuperEasyStart={this.state.setSuperEasyStart.bind(this)}
-              setEasyNumberStart={this.state.setEasyNumberStart.bind(this)}
-              setMediumNumberStart={this.state.setMediumNumberStart.bind(this)}
-              setHardNumberStart={this.state.setHardNumberStart.bind(this)}
-              showOnlyValidEntitries={this.state.showOnlyValidEntitries}
-              allowOnlyValidEntries={this.state.allowOnlyValidEntries}
-              setShowOnlyValidEntitries={this.state.setShowOnlyValidEntitries.bind(
-                this
-              )}
-              setAllowOnlyValidEntries={this.state.setAllowOnlyValidEntries.bind(
-                this
-              )}
-              configurationSet={this.state.configurationSet.bind(this)}
+            <StateSelector
+              host={this.state.host.bind(this)}
+              setup={(function configureSetup() {
+                return {
+                  headerTitle:
+                    "Please select how many cells you want to have when starting a new sudoku puzzle. ",
+                  onSubmit: "configurationSet",
+                  host: "host",
+                  state: {
+                    values: [
+                      {
+                        name: "superEasyStart",
+                        properties: { label: "Super Easy", type: "number" },
+                        conditions: { greaterThen: 0, lessThen: 80 }
+                      },
+                      {
+                        name: "easyNumberStart",
+                        properties: { label: "Easy", type: "number" },
+                        conditions: { greaterThen: 0, lessThen: 80 }
+                      },
+                      {
+                        name: "mediumNumberStart",
+                        properties: { label: "Medium", type: "number" },
+                        conditions: { greaterThen: 0, lessThen: 80 }
+                      },
+                      {
+                        name: "hardNumberStart",
+                        properties: { label: "Hard", type: "number" },
+                        conditions: { greaterThen: 0, lessThen: 80 }
+                      },
+                      {
+                        name: "showOnlyValidEntitries",
+                        properties: {
+                          label:
+                            "Provide only valid candidates when player attempts to edit a cell",
+                          note:
+                            "*this allow users to input invalid entries. Only" +
+                            " when the player finishes the games does the system" +
+                            " reveal if the player has solved the puzzle correctly.",
+                          type: "boolean"
+                        }
+                      }
+                    ]
+                  }
+                };
+              })()}
             />
           </>
         ) : (
@@ -134,16 +134,16 @@ class SudokuStart extends React.Component {
                 {!this.state.canFindValidSolution ? (
                   " We're sorry but we cannot find a solution with that many " +
                   " selected starts. please try reconfiguring the allowed " +
-                  " number of starts "
+                  " number of starts to a larger value"
                 ) : (
                   <></>
                 )}
                 <br />
                 <br />
-                <div>
+                <div style={{ width: "400px" }}>
                   Please select difficulty level
                   <button
-                    className="btn btn-xs btn-info"
+                    className="btn btn-s btn-info"
                     style={{ float: "right" }}
                     onClick={() => {
                       this.setState({
