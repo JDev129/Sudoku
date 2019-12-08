@@ -8,7 +8,7 @@ The following project was inspired from an excersize created by the great coder 
 http://codinghelmet.com/exercises/sudoku-solver
 
 After completing the follow up exercises, found in the C# file SudokuCSharpProgram.cs, I moved the heart of the logic to javascript and created a react user interface. Everything begins at the react component 'SudokuStart' in SudokuStart.js. This component handles the configuration and difficulty selection. From there it runs the SudokuPuzzle component which handles creating the solution and the starting puzzle. This component also manages the progress of the puzzle and anding new attempted values and then the puzzle is displayed in the Sudoku component.
-The last 2 components, SudokuConfiguration and SudokuKeyPad, are subcontracting out the tasks associated with their name. Please take a look and let me know if you have any questions suggestions or input.
+This is a project is continually being refactored and improved. Please take a look and let me know if you have any questions suggestions or input.
 
 Thanks,
 Jeremy Christman
@@ -16,7 +16,10 @@ JChristman129@gmail.com
 
 
 
+Release Notes:
+V1.4
 
+Deleted ReactConfiguration component. Added ReactStateSelector comonent. This accomplishes the same thing only is more generic so can be used in other projects/places. ReactStateSelector requires passing a function which return the 'this' keyword so it can access the state of the host component. It also requires an object called setup which specifies the state on the host for which ReactStateSelector is to manage. Take a look at 'SudokuStart' where this component is used.
 
 
 Release Notes:
