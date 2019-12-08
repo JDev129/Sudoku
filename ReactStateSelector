@@ -136,7 +136,14 @@ class StateSelector extends React.Component {
       <div>
         {this.state.setupStateValid(this.state.setup, this.state.parentHost) ? (
           <>
-            <div>
+            <div
+              style={{
+                maxWidth:
+                  typeof this.state.setup.maxWidth == "string"
+                    ? this.state.setup.maxWidth + "px"
+                    : ""
+              }}
+            >
               {typeof this.state.setup.headerTitle == "string" ? (
                 <>
                   <p>
