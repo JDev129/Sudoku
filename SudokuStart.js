@@ -79,6 +79,7 @@ class SudokuStart extends React.Component {
                     "Please select how many cells you want to have when starting a new sudoku puzzle. ",
                   onSubmit: "configurationSet",
                   host: "host",
+                  maxWidth: "600",
                   state: {
                     values: [
                       {
@@ -107,9 +108,9 @@ class SudokuStart extends React.Component {
                           label:
                             "Provide only valid candidates when player attempts to edit a cell",
                           note:
-                            "*this allow users to input invalid entries. Only" +
-                            " when the player finishes the games does the system" +
-                            " reveal if the player has solved the puzzle correctly.",
+                            "*this allow users to only input valid entries. Uncheck to allow " +
+                            " invalid attempts. This will only reveal if the player has solved " +
+                            " the puzzle correctly when the player finishes the games.",
                           type: "boolean"
                         }
                       }
