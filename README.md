@@ -1,5 +1,5 @@
 # Sudoku
-React Sudoku Puzzle V1.3
+React Sudoku Puzzle V1.4
 
 Welcome, to my sudoku puzzle. 
 
@@ -7,7 +7,8 @@ The following project was inspired from an excersize created by the great coder 
 (found here)
 http://codinghelmet.com/exercises/sudoku-solver
 
-After completing the follow up exercises, found in the C# file SudokuCSharpProgram.cs, I moved the heart of the logic to javascript and created a react user interface. Everything begins at the react component 'SudokuStart' in SudokuStart.js. This component handles the configuration and difficulty selection. From there it runs the SudokuPuzzle component which handles creating the solution and the starting puzzle. This component also manages the progress of the puzzle and anding new attempted values and then the puzzle is displayed in the Sudoku component.
+After completing the follow up exercises, found in the C# file SudokuCSharpProgram.cs, I moved the heart of the C# logic to javascript and created a react.js user interface. Everything begins at the react component 'SudokuStart' in SudokuStart.js. This component handles the configuration and difficulty selection. From there it runs the SudokuPuzzle component which handles creating the solution and the starting puzzle. The SudokuPuzzle component also manages the progress of the puzzle and anding new values. The puzzle is displayed in the Sudoku component.
+
 This is a project is continually being refactored and improved. Please take a look and let me know if you have any questions suggestions or input.
 
 Thanks,
@@ -22,11 +23,9 @@ V1.4
 Deleted ReactConfiguration component. Added ReactStateSelector comonent. This accomplishes the same thing only is more generic so can be used in other projects/places. ReactStateSelector requires passing a function which return the 'this' keyword so it can access the state of the host component. It also requires an object called setup which specifies the state on the host for which ReactStateSelector is to manage. Take a look at 'SudokuStart' where this component is used.
 
 
-Release Notes:
 V1.3
 
 Cleaned up solution function inside Sudoku component. Fixed a found bug. It would allow you to continue playing even after all the cells were entered (regardless if it was a valid solution or not.) You will notice when you complete a puzzle that you cannot clear or change any of the values with the SudokuKeyPad without first moving back to a previous move at the bottom.
-
 
 
 V 1.2
