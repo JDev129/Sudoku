@@ -1,0 +1,279 @@
+import React from "react";
+import PropTypes from "prop-types";
+class StateSelector extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = this.setupStateSelector(props);
+  }
+  setupStateSelector(theProps) {
+    let theState = {
+      setHostState: this.setHostState,
+      parentHost: theProps.host,
+      setup: theProps.setup,
+      submitHandler: this.onSubmit,
+      setupStateValid: this.setupStateValid,
+      initalStateValues: this.runSetup(theProps),
+      isValidChild: this.isValidChild
+    };
+    if (
+      this.setupStateValid(theProps.setup) &&
+      typeof theProps.host === "function"
+    ) {
+      for (var i = 0; i < theProps.setup.state.values.length; i++) {
+        if (this.isValidChild(theProps.setup.state.values[i])) {
+          theState[theProps.setup.state.values[i].name] = theProps.host().state[
+            theProps.setup.state.values[i].name
+          ];
+        }
+      }
+    }
+    return theState;
+  }
+  runSetup(props) {
+    var stateSetup = [];
+    if (this.setupStateValid(props.setup) && typeof props.host === "function") {
+      for (var i = 0; i < props.setup.state.values.length; i++) {
+        stateSetup.push({
+          theValue: props.host().state[props.setup.state.values[i].name]
+        });
+      }
+    }
+    return stateSetup;
+  }
+  setHostState(valName, newVal, hostCtx, conditions) {
+    if (typeof conditions == "function" && conditions(newVal))
+      hostCtx.setState({
+        [valName]: newVal
+      });
+    else if (typeof conditions != "function")
+      hostCtx.setState({
+        [valName]: newVal
+      });
+  }
+  isValidChild(child) {
+    return (
+      typeof child.name == "string" &&
+      typeof child.properties == "object" &&
+      typeof child.properties.type == "string" &&
+      (child.properties.type == "number" ||
+        child.properties.type == "boolean" ||
+        child.properties.type == "string")
+    );
+  }
+  setupStateValid(setupState) {
+    if (
+      typeof setupState == "object" &&
+      typeof setupState.state == "object" &&
+      Array.isArray(setupState.state.values) &&
+      typeof setupState.onSubmit == "string"
+    ) {
+      return true;
+    }
+  }
+  onSubmit(dontRevert, host) {
+    if (
+      this.setupStateValid(this.setup) &&
+      typeof host === "function" &&
+      typeof dontRevert == "boolean" &&
+      dontRevert
+    ) {
+      for (var i = 0; i < this.setup.state.values.length; i++) {
+        if (typeof this.setup.state.values[i].conditions == "object") {
+          let hasLessThen =
+            typeof this.setup.state.values[i].conditions.lessThen == "number";
+          let hasGreaterThen =
+            typeof this.setup.state.values[i].conditions.greaterThen ==
+            "number";
+          let passValidation = true;
+          if (
+            hasLessThen &&
+            this[this.setup.state.values[i].name] >
+              this.setup.state.values[i].conditions.lessThen
+          ) {
+            passValidation = false;
+            alert(
+              this.setup.state.values[i].properties.label +
+                " must be less than " +
+                this.setup.state.values[i].conditions.lessThen
+            );
+          }
+          if (
+            hasGreaterThen &&
+            this[this.setup.state.values[i].name] <
+              this.setup.state.values[i].conditions.greaterThen
+          ) {
+            passValidation = false;
+            alert(
+              this.setup.state.values[i].properties.label +
+                " must be greater than " +
+                this.setup.state.values[i].conditions.greaterThen
+            );
+          }
+          if (passValidation) {
+            host().setState({
+              [this.setup.state.values[i].name]: this[
+                this.setup.state.values[i].name
+              ]
+            });
+          }
+        } else {
+          host().setState({
+            [this.setup.state.values[i].name]: this[
+              this.setup.state.values[i].name
+            ]
+          });
+        }
+      }
+      host()[this.setup.onSubmit]();
+    } else if (typeof dontRevert == "boolean" && !dontRevert) {
+      host()[this.setup.onSubmit]();
+    } else {
+      alert("error, no state to set  ");
+    }
+  }
+  render() {
+    return (
+      <div>
+        {this.state.setupStateValid(this.state.setup, this.state.parentHost) ? (
+          <>
+            <div>
+              {typeof this.state.setup.headerTitle == "string" ? (
+                <>
+                  <p>
+                    <em>{this.state.setup.headerTitle}</em>
+                  </p>
+                </>
+              ) : (
+                <></>
+              )}
+              {this.state.setup.state.values.map(theVal => {
+                return (
+                  <>
+                    <div
+                      key={theVal.name}
+                      className="row"
+                      style={{ margin: 10 }}
+                    >
+                      {typeof theVal.properties == "object" ? (
+                        <>
+                          {this.state.isValidChild(theVal) ? (
+                            <>
+                              <div>
+                                {theVal.properties.type == "number" ? (
+                                  <>
+                                    <input
+                                      value={this.state[theVal.name]}
+                                      style={{ maxWidth: "35px" }}
+                                      onChange={e => {
+                                        this.setState({
+                                          [theVal.name]: e.target.value
+                                        });
+                                      }}
+                                    />
+                                  </>
+                                ) : theVal.properties.type == "boolean" ? (
+                                  <>
+                                    <input
+                                      checked={this.state[theVal.name]}
+                                      onChange={e => {
+                                        this.setState({
+                                          [theVal.name]: e.target.checked
+                                        });
+                                      }}
+                                      type="checkbox"
+                                    />
+                                  </>
+                                ) : theVal.properties.type == "string" ? (
+                                  <>
+                                    <input
+                                      value={this.state[theVal.name]}
+                                      style={{ maxWidth: "125px" }}
+                                      onChange={e => {
+                                        this.setState({
+                                          [theVal.name]: e.target.value
+                                        });
+                                      }}
+                                    />
+                                  </>
+                                ) : (
+                                  <></>
+                                )}
+                              </div>
+                              &nbsp;&nbsp;
+                              <div>{theVal.properties.label}</div>
+                              {typeof theVal.properties.note == "string" ? (
+                                <>
+                                  <em style={{ fontSize: "11px" }}>
+                                    {theVal.properties.note}
+                                  </em>
+                                </>
+                              ) : (
+                                <></>
+                              )}
+                            </>
+                          ) : (
+                            <></>
+                          )}
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                  </>
+                );
+              })}
+              <br />
+              <div className="row">
+                &nbsp;&nbsp;&nbsp;
+                <div className="col">
+                  <div style={{ float: "left" }}>
+                    <button
+                      className="btn btn-sm btn-warning"
+                      onClick={(function(theState) {
+                        return () => {
+                          theState.submitHandler(false, theState.parentHost);
+                        };
+                      })(this.state)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  &nbsp;&nbsp;&nbsp;
+                </div>
+                <div className="col">
+                  <div style={{ float: "right" }}>
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={(function(theState) {
+                        return () => {
+                          theState.submitHandler(true, theState.parentHost);
+                        };
+                      })(this.state)}
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              Error in ReactStateSelector.. please pass the react component
+              ReactStateSelector the property names setup containing an object
+              with host, state, and onSubmit properties. The host property is a
+              string names a function on the state of the calling react
+              component Component which return the this keyword.
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+}
+StateSelector.propTypes = {
+  setup: PropTypes.object.isRequired,
+  host: PropTypes.func.isRequired
+};
+export default StateSelector;
